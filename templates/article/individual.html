@@ -1,0 +1,267 @@
+{# ------------------------------------------------------- #}
+{# INDIVIDUAL VIEW FOR EACH article #}
+{# This page can use any data from http:localhost:2000/cms/#/form/article/ #}
+{# Webhook uses the SWIG.js (like Djagno/Twig) templating system. Their documentation is here: #}
+{# http://paularmstrong.github.io/swig/docs/tags/ #}
+{# Learn about calling data into Webhook pages here: #}
+{# http://www.webhook.com/docs/template-rules-and-filters/ #}
+{# ------------------------------------------------------- #}
+{# Confused what extends and blocks do? Watch a primer: #}
+{# http://www.webhook.com/help/template-inheritance/ #}
+{% extends "templates/partials/base.html" %}
+{# This sets our page <title>. It will append this article's name to the site title defined in base.html #}
+{% block title %}{% parent %} - {{ item.name }}{% endblock %}
+{% block content %}
+      
+      <br>
+      {% set data = get('contentslider') %}
+      <table style="margin-left:auto; margin-right:auto; border-spacing:10px;">
+        <tr id="owl-demo" class="owl-carousel owl-theme">
+          {% for object in getItems(data.promoted_articles) %}
+            <td style="padding:10px;" class="item">
+              {% for image in getItems(object.main_image) %}
+                  <a href="{{ url(object) }}"><img id="slider-image" src="{{image.image|imageSize(200)}}" alt="promoted content"></a>
+                {% endfor %}
+                <a id="slider-title" href="{{ url(object) }}">{{ object.name }}</a>
+            </td>
+          {% endfor %}
+        </tr>
+        <script type="text/javascript">
+          $(document).ready(function() {
+              var owl = $("#owl-demo");
+             
+              owl.owlCarousel({
+                 
+                  itemsCustom : [
+                    [0, 2],
+                    [450, 4],
+                    [600, 7],
+                    [700, 9],
+                    [1000, 10],
+                    [1200, 12],
+                    [1400, 13],
+                    [1600, 15]
+                  ],
+                  navigation : true
+              });
+            });
+        </script>
+      </table>
+
+  <!-- {{ object.publish_date|date('F d Y') }}
+      <a href="{{ url(object) }}">{{ object.name }}</a> -->
+  <p></p>
+
+  <div class="articleTitle">
+    <h1>{{ item.name }}</h1>
+    <p>Published on {{ item.publish_date|date('F d Y') }}</p>
+  </div>
+
+  <div class="thisarticle">
+
+        <div class = "mainpic">
+          {# Relations require some special code. More info about relations here: #}
+          {# http://www.webhook.com/docs/template-rules-and-filters/#getitem #}
+          {% for relation in getItems(item.main_image) %}
+            {# You can ouput more than just the name. Feel free to output more fields from the CMS. #}
+            <a href="{{ url(relation) }}"><img style="width: 100%" src="{{ relation.image|imageSize(1024)  }}"></a>{% if not loop.last %},{% endif %}
+            {% for photographer in getItems(relation.photographer) %}
+              Photo credit: <a href="{{ url(photographer) }}">{{ photographer.name }}</a> | Daily Texan Staff
+            {% endfor %}
+          {% endfor %}
+        </div>
+
+        <div class="content">
+          <div class="author">
+          <p>Written by:</p>
+            {% for relation in getItems(item.author) %}
+            <div class="authorpicture">
+              <a href="{{ url(relation) }}"><img id="authorPic" src="{{ relation.profile_image|imageSize(100)}}"></a>
+            </div>
+            <div class="authorinfo">
+            <br><a href="{{ url(relation) }}">{{ relation.name }}</a><br>{{ relation.job_title }}<br><p></p>
+            </div>
+            <div class="socialIcons">
+            <table style="text-align:center">
+              <tr>
+                <td><a href="{{ relation.facebook_profile_url }}"><img class="socialImg" src="/static/images/facebook.png"></a></td>
+                <td><a href="{{ relation.twitter_profile_url }}"><img class="socialImg" src="/static/images/twitter.png"></a></td>
+                <td><a href="{{ relation.google_profile_url }}"><img class="socialImg" src="/static/images/gplus2.png"></a></td>
+                <td><a href="{{ relation.linkedin_profile_url }}"><img class="socialImg" src="/static/images/linkedin.png"></a></td>
+              </tr>
+            </table>
+            </div>
+            {% endfor %}
+          </div>
+            {{ item.body_part_1|safe }}
+            {% for relation in getItems(item.secondary_photo) %}
+              {# You can ouput more than just the name. Feel free to output more fields from the CMS. #}
+              <a href="{{ url(relation) }}"><img style="width: 100%" src="{{ relation.image|imageSize(1024)  }}"></a>{% if not loop.last %},{% endif %}
+            {% endfor %}
+            {# Embed.ly content usually comes with more data. Info here: #}
+            {# http://www.webhook.com/docs/widget-template-reference/#embedly #}
+            {{ item.embed_url.html|safe  }}
+            {{ item.body_part_2|safe }}
+        </div>
+
+      </div>
+      <link rel="stylesheet" type="text/css" href="/static/content-slider/css/styles.css">
+      <script type='text/javascript' src='/static/content-slider/js/jquery-1.11.0.min.js'></script>
+      <script type='text/javascript' src='/static/content-slider/js/responsiveCarousel.min.js'></script>
+      <style type="text/css">
+          .articleTitle {
+            
+          }
+          .articleTitle p {
+            margin-top: 10px;
+            font-size: 0.9em;
+          }
+
+          h1 {
+            font-family: Georgia;
+            font-size: 3em;
+            font-weight: lighter;
+          }
+
+          .thisarticle {
+            display: inline-block;
+          }
+
+          .mainpic {
+            width: 100%;
+            float: left;
+            font-family: ff-din, Helvetica, sans-serif;
+            font-weight: lighter;
+            font-size: 1em;
+            text-align: right;
+          }
+
+          .mainpic a {
+            text-decoration: none;
+            color: #cf5300;
+            font-family: ff-din, Helvetica, sans-serif;
+            font-weight: lighter;
+            font-size: 1em;
+          }
+
+          .mainpic a:hover {
+            color: white;
+            background-color: #cf5300;
+          }
+
+          .mainpic a:active {
+            background-color: #a8341d;
+          }
+
+          .rightColumn {
+            width: 0%;
+            float: right;
+          }
+
+          .adpics {
+            float:right;
+            margin-bottom: 15px;
+            width: 100%;
+          }
+
+          .rightColumn #spacer {
+            display: inline-block;
+            height: 70px;
+            width: 100%;
+          }
+
+          .rightColumn .relatedArticles {
+            width: 100%;
+            float: right;
+          }
+
+          .rightColumn h4 {
+            font-family: ff-din, Helvetica, sans-serif;
+            font-weight: lighter;
+            text-transform: uppercase;
+          }
+
+          .rightColumn a {
+            text-decoration: none;
+            color: black;
+          }
+
+          .rightColumn .relatedPreview {
+            border: 1px solid green;
+            height: 60px;
+            margin-top: 15px;
+          }
+
+          .content {
+            margin-top: 25px;
+            width: 100%;
+            float:left;
+          }
+
+          .author {
+            width: 120px;
+            float: left;
+            padding-right: 10px;
+            border-right: 1px solid #e6e6e6;
+            margin-right: 20px;
+            margin-bottom: 10px;
+          }
+
+          .author p {
+            text-align: left;
+            font-size: 1em;
+            font-family: ff-din, Helvetica, sans-serif;
+            font-weight: lighter;
+            margin-bottom: 10px;
+          }
+
+          .authorpicture {
+            width: 100px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          .authorinfo {
+            text-align: center;
+            font-size: 1em;
+            font-family: ff-din, Helvetica, sans-serif;
+          }
+
+          .authorinfo a {
+            text-decoration: none;
+            color: #cf5300;
+            font-family: ff-din, Helvetica, sans-serif;
+          }
+
+          .authorinfo a:hover {
+            color: white;
+            background-color: #cf5300;
+          }
+
+          .authorinfo a:active {
+            background-color: #a8341d;
+          }
+
+          .socialIcons {
+            width: 90px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          .socialImg {
+            width: 95%;
+          }
+          #owl-demo .item{
+            background: #FFFFFF;
+            padding: 30px 0px;
+            margin: 5px;
+            color: #FFF;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            text-align: center;
+            width: 25%;
+          }
+        </style>
+
+    {% endblock %}
