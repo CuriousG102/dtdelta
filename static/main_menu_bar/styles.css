@@ -11,8 +11,7 @@
   list-style-type: none;
   padding: 0;
   margin: 0;
-  background: #bababa;
-  border: 1px solid #bababa;
+  background: #e6e3d9;
 }
 #cssmenu > ul li#responsive-tab {
   display: none;
@@ -59,9 +58,9 @@
 }
 #cssmenu > ul li a {
   display: block;
-  padding: 12px 24px 11px 24px;
+  padding: 11px 24px 12px 24px;
   text-decoration: none;
-  color: #FFFFFF;
+  color: black;
   font-weight: lighter;
 }
 #cssmenu > ul li a.active,

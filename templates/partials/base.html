@@ -27,7 +27,9 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js"></script>
 
-    <link href="/static/menu_source/styles.css" rel="stylesheet" type="text/css">
+
+    <!--Main menu bar style -->
+    <link href="/static/main_menu_bar/styles.css" rel="stylesheet" type="text/css">
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type='text/javascript' src='/static/menu_source/menu_jquery.js'></script>
 
@@ -41,14 +43,23 @@
     {% block head_extra %}{% endblock %}
   </head>
   <body style="width: 100%; margin: 0 auto;">
-  <img id="title-banner" style="max-width:100%;" src="/static/images/titleBanner.png">
-  <div id="triangle">
-  </div>
+
+
+  <!-- Main Banner: The Daily Texan -->
+  <a href='../../index.html'><img id="title-banner" style="max-width:100%;" src="/static/images/titleBanner.png"></a>
+  <div id="triangle"></div>
+
+
+  <!-- Breaking News -->
+  <div id="breaking-news"></div>
+
+
+  <!-- Main content border: light grey -->
   <div id="base-container" style="border-left: 1px solid #bababa; border-right: 1px solid #bababa;">
 
     <div id='cssmenu'>
     <ul>
-       <li class='active'><a href='index.html'><span>Home</span></a></li>
+       <li class='active' style="width:0; padding:0; margin:-2px;"></li>
        <li class='has-sub'><a href='#'><span>News</span></a>
           <ul>
              <li><a href='#'><span>Student Government</span></a></li>
@@ -134,5 +145,8 @@
       {% endblock %}
     </div>
     </div>
+
+    <!-- Main footer -->
+    <div id="footer"></div>
   </body>
 </html>
