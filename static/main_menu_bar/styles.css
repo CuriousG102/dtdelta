@@ -78,8 +78,8 @@
   }
   #cssmenu > ul li#responsive-tab a {
     background: url('images/menu.png') no-repeat;
-    background-position: 97% 0%;
-    margin-top: 10px;
+    background-position: 97% 45%;
+    height: 40px;
   }
   #cssmenu > ul li#responsive-tab a:hover {
     
