@@ -4,28 +4,76 @@
 {% extends "templates/partials/base.html" %}
 
 {% block content %}
+  
+  <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="css/flexslider.css" type="text/css" media="screen" />
 
-<h1>Hello <a href="http://getbootstrap.com/">Bootstrap</a></h1>
+  <script src="js/modernizr.js"></script>
 
-  <p>This is your homepage, located at /pages/index.html.</p>
+  <body class="loading">
 
-  <p><a class="btn btn-primary" href="/cms/">Looking for the CMS?</a></p>
+  <div id="container" class="cf">
+  
 
-  {# Grabs the data to list all the content types (set as multiple) from the CMS. #}
-  {% set types = getTypes() %}
+  <div id="main" role="main">
+      <section class="slider">
+        <div class="flexslider">
+          <ul class="slides">
+            <li data-thumb="images/cat_laying.jpg">
+              <img src="images/cat_laying.jpg" />
+            </li>
+            <li data-thumb="images/kitchen_adventurer_lemon.jpg">
+              <img src="images/kitchen_adventurer_lemon.jpg" />
+            </li>
+            <li data-thumb="images/kitchen_adventurer_donut.jpg">
+              <img src="images/kitchen_adventurer_donut.jpg" />
+            </li>
+            <li data-thumb="images/kitchen_adventurer_caramel.jpg">
+              <img src="images/kitchen_adventurer_caramel.jpg" />
+            </li>
+          </ul>
+        </div>
+      </section>
+      
+    </div>
 
-  {# If you have at least content page type, we show a list. #}
-  {% if types|size !== 0 %}
+  </div>
 
-    <h3>Content types you've created in the CMS so far.</h3>
+  <!-- jQuery -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.min.js">\x3C/script>')</script>
 
-    <ul>
-    {% for type in types %}
-      <li><a href="{{ url(type) }}">{{ type.name }}</a></li>
-    {% endfor %}
-    </ul>
+  <!-- FlexSlider -->
+  <script defer src="js/jquery.flexslider.js"></script>
 
-  {% endif %}
+  <script type="text/javascript">
+    $(function(){
+      SyntaxHighlighter.all();
+    });
+    $(window).load(function(){
+      $('.flexslider').flexslider({
+        animation: "slide",
+        controlNav: "thumbnails",
+        start: function(slider){
+          $('body').removeClass('loading');
+        }
+      });
+    });
+  </script>
+
+
+  <!-- Syntax Highlighter -->
+  <script type="text/javascript" src="js/shCore.js"></script>
+  <script type="text/javascript" src="js/shBrushXml.js"></script>
+  <script type="text/javascript" src="js/shBrushJScript.js"></script>
+
+  <!-- Optional FlexSlider Additions -->
+  <script src="js/jquery.easing.js"></script>
+  <script src="js/jquery.mousewheel.js"></script>
+  <script defer src="js/script.js"></script>
+
+</body>
+
 
 
 {% endblock %}
