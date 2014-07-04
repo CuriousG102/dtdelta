@@ -9,6 +9,7 @@
 {# Confused what extends and blocks do? Watch a primer: #}
 {# http://www.webhook.com/help/template-inheritance/ #}
 {% extends "templates/partials/base.html" %}
+{% import 'article/slider_js.html' as slider_js %}
 {# This sets our page <title>. It will append this article's name to the site title defined in base.html #}
 {% block title %}{% parent %} - {{ item.name }}{% endblock %}
 {% block content %}
@@ -281,3 +282,5 @@
     <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
     {% endblock %}
+
+    {{ style.insert_flier_styles()}}
