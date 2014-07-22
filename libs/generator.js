@@ -496,7 +496,7 @@ module.exports.generator = function (config, logger, fileParser) {
 
             if(typeInfo[objectName]) {
               typeInfo[objectName].controls.forEach(function(control) {
-                if(control.controlType === 'template') {
+                if(control.controlType === 'layout') {
                   templateWidgetName = control.name;
                 }
               });
@@ -520,7 +520,7 @@ module.exports.generator = function (config, logger, fileParser) {
                 var val = publishedItems[key];
 
                 if(templateWidgetName) {
-                  overrideFile = 'templates/' + objectName + '/templates/' + val[templateWidgetName];
+                  overrideFile = 'templates/' + objectName + '/layouts/' + val[templateWidgetName];
                 }
 
                 newPath = baseNewPath + '/' + slug(val.name).toLowerCase() + '/index.html';
@@ -538,7 +538,7 @@ module.exports.generator = function (config, logger, fileParser) {
                 var val = items[key];
 
                 if(templateWidgetName) {
-                  overrideFile = 'templates/' + objectName + '/templates/' + val[templateWidgetName];
+                  overrideFile = 'templates/' + objectName + '/layouts/' + val[templateWidgetName];
                 }
 
                 newPath = previewPath + '/' + val.preview_url + '/index.html';
@@ -549,7 +549,7 @@ module.exports.generator = function (config, logger, fileParser) {
                   writeTemplate(file, newPath, { item: val });
                 }
               }
-            } else if(filePath.indexOf('templates/' + objectName + '/templates') !== 0) { // Handle sub pages in here
+            } else if(filePath.indexOf('templates/' + objectName + '/layouts') !== 0) { // Handle sub pages in here
               baseNewPath = newPath;
 
               var middlePathName = filePath.replace('templates/' + objectName, '') + '/' + baseName;
@@ -857,7 +857,7 @@ module.exports.generator = function (config, logger, fileParser) {
         } else if (message === 'supported_messages') {
           sock.send('done:' + JSON.stringify([
             'scaffolding', 'scaffolding_force', 'check_scaffolding', 'reset_files', 'supported_messages',
-            'push', 'build', 'preset'
+            'push', 'build', 'preset', 'layouts'
           ]));
         } else if (message === 'push') {
           pushSite(function(error) {

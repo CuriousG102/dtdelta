@@ -1,5 +1,5 @@
 body {
-  max-width: 1000px;
+
 }
 
 #breaking-news {
@@ -12,9 +12,16 @@ body {
 	height: 300px;
 }
 
-@media screen and (min-width: 1050px) {
+#title-banner {
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+@media screen and (min-width: 1200px) {
 	body {
 		padding-top: 50px;
+		width: 80%;
+		max-width: 1200px;
 	}
 	#title-banner {
 		margin-left: -50px;
