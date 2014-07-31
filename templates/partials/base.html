@@ -132,13 +132,13 @@
 
         {% include "templates/partials/footer.html" %}
 
+
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
-        <!-- build:js /static/javascript/minified.js -->
-        <script src="/static/javascript/main.js"></script>
-        <script src="/static/owl.carousel/owl-carousel/owl.carousel.js"></script>
-        <!-- endbuild -->
+        {% block scripts %}{% endblock %}
+
+        <!-- build:js /static/javascript/minified.js --><!-- endbuild -->
 
         {# Google Analytics code. Feel free to remove. #}
         <script>

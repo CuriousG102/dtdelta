@@ -353,4 +353,8 @@
 
     {% endblock %}
 
-    {{ style.insert_flier_styles()}}
+    {% block scripts %}
+      <script src="/static/javascript/main.js"></script>
+      <script src="/static/owl.carousel/owl-carousel/owl.carousel.js"></script>
+    {% endblock %}
+            
