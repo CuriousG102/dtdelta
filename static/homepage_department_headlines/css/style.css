@@ -1,0 +1,70 @@
+#department_headlines {
+  text-align: center;
+  width: 98%;
+  margin: auto;
+}
+
+#slider_news, #slider_sports, #slider_las {
+  position: relative;
+  overflow: hidden;
+  margin: 20px auto 0 auto;
+  display: inline-block;
+}
+
+#slider_news {
+  float: left;
+}
+
+#slider_sports {
+  float: center;
+}
+
+#slider_las {
+  float: right;
+}
+
+#slider_news ul, #slider_sports ul, #slider_las ul {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  height: 200px;
+  list-style: none;
+}
+
+#slider_news ul li, #slider_sports ul li, #slider_las ul li {
+  float: left;
+  margin: 0;
+  padding: 0;
+  width: 350px;
+  height: 200px;
+  background: #ccc;
+  text-align: center;
+  line-height: 200px;
+}
+
+a.control_prev_news, a.control_next_news, a.control_prev_sports, a.control_next_sports, a.control_prev_las, a.control_next_las {
+  position: absolute;
+  z-index: 999;
+  display: block;
+  padding: 0 3%;
+  width: auto;
+  height: 100%;
+  line-height: 200px;
+  outline: 1px solid #fff;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+a.control_prev_news:hover, a.control_next_news:hover, a.control_prev_sports:hover, a.control_next_sports:hover, a.control_prev_las:hover, a.control_next_las:hover {
+  background: gray;
+  outline: 1px solid gray;
+  opacity: 1;
+  -webkit-transition: all 0.2s ease;
+}
+
+a.control_next_news, a.control_next_sports, a.control_next_las {
+  right: 0;
+}

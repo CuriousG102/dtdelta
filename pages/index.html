@@ -6,6 +6,7 @@
 {# Homepage head content #}
 {% block head_extra %}
   <link rel="stylesheet" type="text/css" href="/static/homepage_slideshow/css/style.css" />
+  <link rel="stylesheet" type="text/css" href="/static/homepage_department_headlines/css/style.css" />
   <noscript>
     <link rel="stylesheet" type="text/css" href="/static/homepage_slideshow/css/noscript.css" />
   </noscript>
@@ -50,28 +51,60 @@
             </div><!-- wrapper -->
         </div>
 
+        <!-- advertisement -->
+        <div class="advertisement">
+            Advertisement here
+        </div>
 
-        <!-- content below dom slider -->
-        <div style="height:600px; border: 1px solid red;" class="row">
-            <div style="height:600px; border: 1px solid red;" class="col-md-8"></div>
-            <div style="height:600px; border: 1px solid red;" class="col-md-4">
-                <div style="height:300px; border: 1px solid red;" class="row"></div>
-                <div style="height:300px; border: 1px solid red;" class="row"></div>
+
+        <!-- content below main slider -->
+        <!-- news, sports, life and arts -->
+        <div id="department_headlines">
+
+            <!-- NEWS headlines -->
+            <div id="slider_news">
+                <a href="#" class="control_next_news">></a>
+                <a href="#" class="control_prev_news"><</a>
+                <ul>
+                    <li>SLIDE 1</li>
+                    <li style="background: #aaa;">SLIDE 2</li>
+                    <li>SLIDE 3</li>
+                    <li style="background: #aaa;">SLIDE 4</li>
+                </ul>  
+            </div>
+
+            <!-- SPORTS headlines -->
+            <div id="slider_sports">
+                <a href="#" class="control_next_sports">></a>
+                <a href="#" class="control_prev_sports"><</a>
+                <ul>
+                    <li>SLIDE 1</li>
+                    <li style="background: #aaa;">SLIDE 2</li>
+                    <li>SLIDE 3</li>
+                    <li style="background: #aaa;">SLIDE 4</li>
+                </ul>  
+            </div>
+    
+            <!-- LIFE AND ARTS headlines -->
+            <div id="slider_las">
+                <a href="#" class="control_next_las">></a>
+                <a href="#" class="control_prev_las"><</a>
+                <ul>
+                    <li>SLIDE 1</li>
+                    <li style="background: #aaa;">SLIDE 2</li>
+                    <li>SLIDE 3</li>
+                    <li style="background: #aaa;">SLIDE 4</li>
+                </ul>  
             </div>
         </div>
-        <div style="height:400px; border: 1px solid red;" class="row">
-            <div style="height:400px; border: 1px solid red;" class="col-md-6">
-                <div style="height:200px; border: 1px solid red;" class="row"></div>
-                <div style="height:200px; border: 1px solid red;" class="row"></div>
-            </div>
-            <div style="height:400px; border: 1px solid red;" class="col-md-6"></div>
-        </div>
+
 
 
 {% endblock %}
 
 {% block scripts %}
   <script type="text/javascript" src="/static/homepage_slideshow/js/jquery.eislideshow.js"></script>
+  <script type="text/javascript" src="/static/homepage_department_headlines/js/script.js"></script>
   <!--<script type="text/javascript" src="js/jquery.easing.1.3.js"></script>-->
   <script type="text/javascript">
       $(function() {
