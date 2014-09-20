@@ -311,55 +311,21 @@ module.exports.init = function (swig) {
     return timestring;
   };
 
-  var where = function(input, property) {
+  var where = function(input, property, filter) {
     var filtered = [];
 
-    var args =  [].slice.apply(arguments);
-    var filters = args.slice(2);
-
     input.forEach(function(item) {
-      if(filters.length === 0) {
+      if(typeof filter === 'undefined') {
         if(item[property]) // Exists
           filtered.push(item);
       } else {
-        filters.forEach(function(filter) {
-          if(item[property] === filter) {
-            filtered.push(item);
-            return false;
-          }
-        })
+        if(item[property] === filter) 
+          filtered.push(item);
       }
     });
     return filtered;
   }
 
-  var exclude = function(input, property) {
-    var filtered = [];
-
-    var args =  [].slice.apply(arguments);
-    var filters = args.slice(2);
-
-    input.forEach(function(item) {
-      var addIn = true;
-
-      if(filters.length === 0) {
-        if(!item[property]) // Exists
-          filtered.push(item);
-      } else {
-        filters.forEach(function(filter) {
-          if(item[property] === filter) {
-            addIn = false;
-            return false;
-          }
-        })
-
-        if(addIn) {
-          filtered.push(item);
-        }
-      }
-    });
-    return filtered;
-  }
   var abs = function(input) {
     return Math.abs(input);
   };
@@ -400,7 +366,7 @@ module.exports.init = function (swig) {
       return singular;
     }
 
-    if(number > 1 || number === 0) {
+    if(number > 1) {
       return suffix;
     } 
 
@@ -427,7 +393,6 @@ module.exports.init = function (swig) {
   swig.setFilter('markdown', markdown);
   swig.setFilter('date', date);
   swig.setFilter('where', where);
-  swig.setFilter('exclude', exclude);
   swig.setFilter('duration', duration);
   swig.setFilter('abs', abs);
   swig.setFilter('linebreaks', linebreaks);

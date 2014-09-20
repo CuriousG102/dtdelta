@@ -72,7 +72,7 @@ Function = wrap;
 module.exports.generator = function (config, logger, fileParser) {
 
   var self = this;
-  var firebaseUrl = config.get('webhook').firebase || 'webhook';
+  var firebaseUrl = 'webhook';
   var liveReloadPort = config.get('connect')['wh-server'].options.livereload;
   var websocket = null;
   var strictMode = false;
@@ -108,13 +108,6 @@ module.exports.generator = function (config, logger, fileParser) {
   var getDnsChild = function() {
     return self.root.child('management/sites/' + config.get('webhook').siteName + '/dns');
   };
-
-
-  var getTypeData = function(type, callback) {
-    getBucket().child('contentType').child(type).once('value', function(data) {
-      callback(data.val());
-    });
-  }
 
   /**
    * Retrieves snapshot of data from Firebase
@@ -204,7 +197,6 @@ module.exports.generator = function (config, logger, fileParser) {
    */
   var writeTemplate = function(inFile, outFile, params) {
     params = params || {};
-    params['firebase_conf'] = config.get('webhook');
     var originalOutFile = outFile;
 
     // Merge functions in
@@ -215,27 +207,19 @@ module.exports.generator = function (config, logger, fileParser) {
     var outputUrl = outFile.replace('index.html', '').replace('./.build', '');
     swigFunctions.setParams({ CURRENT_URL: outputUrl });
 
-    if(params.item) {
-      params.item = params._realGetItem(params.item._type, params.item._id, true);
-    }
-
-    var output = '';
     try {
-      output = swig.renderFile(inFile, params);
+      var output = swig.renderFile(inFile, params);
     } catch (e) {
       self.sendSockMessage(e.toString());
 
       if(strictMode) {
         throw e;
       } else {
-        console.log('Error while rendering template: ' + inFile);
+        console.log('Build Failed'.red);
         console.log(e.toString().red);
-        try {
-          output = swig.renderFile('./libs/debug500.html', { template: inFile, error: e.toString(), backtrace: e.stack.toString() })
-        } catch (e) {
-          return '';
-        }
       }
+
+      return '';
     }
 
     mkdirp.sync(path.dirname(outFile));
@@ -260,14 +244,11 @@ module.exports.generator = function (config, logger, fileParser) {
         if(strictMode) {
           throw e;
         } else {
-          console.log('Error while rendering template: ' + inFile);
+          console.log('Build Failed'.red);
           console.log(e.toString().red);
-          try {
-            output = swig.renderFile('./libs/debug500.html', { template: inFile, error: e.toString(), backtrace: e.stack.toString() })
-          } catch (e) {
-            return '';
-          }
         }
+
+        return '';
       }
 
       mkdirp.sync(path.dirname(outFile));
@@ -316,7 +297,6 @@ module.exports.generator = function (config, logger, fileParser) {
         entry.entryName = newName;
       });
       zip.extractAllTo('.', true);
-
       fs.unlinkSync('.preset.zip');
       callback();
     });
@@ -380,7 +360,7 @@ module.exports.generator = function (config, logger, fileParser) {
 
       entries.forEach(function(entry) {
         if(entry.entryName.indexOf('pages/') === 0
-           || entry.entryName.indexOf('templates/') === 0
+           || entry.entryName.indexOf('templates/') === 0 
            || entry.entryName.indexOf('static/') === 0) {
           zip.extractEntryTo(entry.entryName, '.', true, true);
         }
@@ -391,8 +371,7 @@ module.exports.generator = function (config, logger, fileParser) {
       wrench.rmdirSyncRecursive('.static-old');
 
       fs.unlinkSync('.reset.zip');
-
-      self.init(config.get('webhook').siteName, config.get('webhook').secretKey, true, config.get('webhook').firebase, function() {
+      self.init(config.get('webhook').siteName, config.get('webhook').secretKey, true, function() {
         callback();
       });
     });
@@ -486,11 +465,6 @@ module.exports.generator = function (config, logger, fileParser) {
           fs.writeFileSync('./.build/robots.txt', fs.readFileSync('pages/robots.txt'));
         }
 
-        if(fs.existsSync('./libs/.supported.js')) {
-          mkdirp.sync('./.build/.wh/_supported');
-          fs.writeFileSync('./.build/.wh/_supported/index.html', fs.readFileSync('./libs/.supported.js'));
-        }
-
         logger.ok('Finished Rendering Pages\n');
 
         if(cb) cb(done);
@@ -499,29 +473,6 @@ module.exports.generator = function (config, logger, fileParser) {
     });
   };
 
-  var generatedSlugs = {};
-  var generateSlug = function(value) {
-    if(!generatedSlugs[value._type]) {
-      generatedSlugs[value._type] = {};
-    }
-
-    if(value.slug) {
-      generatedSlugs[value._type][value.slug] = true;
-      return value.slug;
-    }
-    var tmpSlug = slug(value.name).toLowerCase();
-
-    var no = 2;
-    while(generatedSlugs[value._type][tmpSlug]) {
-      tmpSlug = slug(value.name).toLowerCase() + '_' + no;
-      no++;
-    }
-
-    generatedSlugs[value._type][tmpSlug] = true;
-
-    return tmpSlug;
-  }
-
   /**
    * Renders all templates in the /templates directory to the build directory
    * @param  {Function}   done     Callback passed either a true value to indicate its done, or an error
@@ -529,7 +480,6 @@ module.exports.generator = function (config, logger, fileParser) {
    */
   this.renderTemplates = function(done, cb) {
     logger.ok('Rendering Templates');
-    generatedSlugs = {};
 
     getData(function(data, typeInfo) {
 
@@ -545,7 +495,6 @@ module.exports.generator = function (config, logger, fileParser) {
             // Here we try and abstract out the content type name from directory structure
             var baseName = path.basename(file, '.html');
             var newPath = path.dirname(file).replace('templates', './.build').split('/').slice(0,3).join('/');
-
             var pathParts = path.dirname(file).split('/');
             var objectName = pathParts[1];
             var items = data[objectName];
@@ -587,19 +536,10 @@ module.exports.generator = function (config, logger, fileParser) {
               });
             }
 
-            if(typeInfo[objectName] && typeInfo[objectName].customUrls && typeInfo[objectName].customUrls.listUrl) {
-              var customPathParts = newPath.split('/');
-
-              customPathParts[2] = typeInfo[objectName].customUrls.listUrl;
-
-              newPath = customPathParts.join('/');
-            }
-
-            var origNewPath = newPath;
-
             // TODO, DETECT IF FILE ALREADY EXISTS, IF IT DOES APPEND A NUMBER TO IT DUMMY
             if(baseName === 'list')
             {
+
               newPath = newPath + '/index.html';
               writeTemplate(file, newPath);
 
@@ -607,7 +547,6 @@ module.exports.generator = function (config, logger, fileParser) {
               // Output should be path + id + '/index.html'
               // Should pass in object as 'item'
               baseNewPath = newPath;
-              var previewPath = baseNewPath.replace('./.build', './.build/_wh_previews');
 
               // TODO: Check to make sure file does not exist yet, and then adjust slug if it does? (how to handle in swig functions)
               for(var key in publishedItems)
@@ -618,31 +557,7 @@ module.exports.generator = function (config, logger, fileParser) {
                   overrideFile = 'templates/' + objectName + '/layouts/' + val[templateWidgetName];
                 }
 
-                var addSlug = true;
-                if(val.slug) {
-                  baseNewPath = './.build/' + val.slug + '/';
-                  addSlug = false;
-                } else {
-                  if(typeInfo[objectName] && typeInfo[objectName].customUrls && typeInfo[objectName].customUrls.individualUrl) {
-                    baseNewPath = origNewPath + '/' + utils.parseCustomUrl(typeInfo[objectName].customUrls.individualUrl, val) + '/';
-                  } else {
-                    baseNewPath = origNewPath + '/';
-                  }                
-                }
-
-                var tmpSlug = '';
-                if(!val.slug) {
-                  tmpSlug = generateSlug(val);
-                } else {
-                  tmpSlug = val.slug;
-                }
-
-                if(addSlug) {
-                  val.slug = baseNewPath.replace('./.build/', '') + tmpSlug;
-                  newPath = baseNewPath + tmpSlug + '/index.html';
-                } else {
-                  newPath = baseNewPath + 'index.html';
-                }
+                newPath = baseNewPath + '/' + slug(val.name).toLowerCase() + '/index.html';
 
                 if(fs.existsSync(overrideFile)) {
                   writeTemplate(overrideFile, newPath, { item: val });
@@ -651,6 +566,7 @@ module.exports.generator = function (config, logger, fileParser) {
                 }
               }
 
+              var previewPath = baseNewPath.replace('./.build', './.build/_wh_previews');
               for(var key in items)
               {
                 var val = items[key];
@@ -677,32 +593,7 @@ module.exports.generator = function (config, logger, fileParser) {
               {
                 var val = publishedItems[key];
 
-                var addSlug = true;
-                if(val.slug) {
-                  baseNewPath = './.build/' + val.slug + '/';
-                  addSlug = false;
-                } else {
-                  if(typeInfo[objectName] && typeInfo[objectName].customUrls && typeInfo[objectName].customUrls.individualUrl) {
-                    baseNewPath = origNewPath + '/' + utils.parseCustomUrl(typeInfo[objectName].customUrls.individualUrl, val) + '/';
-                  }   else {
-                    baseNewPath = origNewPath + '/';
-                  }                  
-                }
-
-                var tmpSlug = '';
-                if(!val.slug) {
-                  tmpSlug = generateSlug(val);
-                } else {
-                  tmpSlug = val.slug;
-                }
-
-                if(addSlug) {
-                  val.slug = baseNewPath.replace('./.build/', '') + tmpSlug;
-                  newPath = baseNewPath + tmpSlug + '/' + middlePathName + '/index.html';
-                } else {
-                  newPath = baseNewPath + middlePathName + '/index.html';
-                }
-
+                newPath = baseNewPath + '/' + slug(val.name).toLowerCase() + '/' + middlePathName + '/index.html';
                 writeTemplate(file, newPath, { item: val });
               }
             }
@@ -887,7 +778,7 @@ module.exports.generator = function (config, logger, fileParser) {
 
         individualMD5 = md5(template);
         fs.writeFileSync(individual, template);
-
+        
         var lTemplate = _.template(listTemplate, { typeName: name });
 
         listMD5 = md5(lTemplate);
@@ -997,30 +888,8 @@ module.exports.generator = function (config, logger, fileParser) {
         } else if (message === 'supported_messages') {
           sock.send('done:' + JSON.stringify([
             'scaffolding', 'scaffolding_force', 'check_scaffolding', 'reset_files', 'supported_messages',
-            'push', 'build', 'preset', 'layouts', 'preset_localv2', 'generate_slug_v2'
+            'push', 'build', 'preset', 'layouts', 'preset_localv2'
           ]));
-        } else if (message.indexOf('generate_slug_v2:') === 0) {
-          var obj = JSON.parse(message.replace('generate_slug_v2:', ''));
-          var type = obj.type;
-          var name = obj.name;
-          var date = obj.date;
-
-          getTypeData(type, function(typeInfo) {
-            var tmpSlug = '';
-            tmpSlug = slug(name).toLowerCase();
-
-            if(typeInfo && typeInfo.customUrls && typeInfo.customUrls.individualUrl) {
-              tmpSlug = utils.parseCustomUrl(typeInfo.customUrls.individualUrl, date) + '/' + tmpSlug;
-            } 
-
-            if(typeInfo && typeInfo.customUrls && typeInfo.customUrls.listUrl) {
-              tmpSlug = typeInfo.customUrls.listUrl + '/' + tmpSlug;
-            } else {
-              tmpSlug = type + '/' + tmpSlug;
-            }
-              
-            sock.send('done:' + JSON.stringify(tmpSlug));
-          });
         } else if (message === 'push') {
           pushSite(function(error) {
             if(error) {
@@ -1080,15 +949,11 @@ module.exports.generator = function (config, logger, fileParser) {
    * @param  {Boolean}   copyCms   True if the CMS should be overwritten, false otherwise
    * @param  {Function}  done      Callback to call when operation is done
    */
-  this.init = function(sitename, secretkey, copyCms, firebase, done) {
+  this.init = function(sitename, secretkey, copyCms, done) {
     var confFile = fs.readFileSync('./libs/.firebase.conf.jst');
 
-    if(firebase) {
-      confFile = fs.readFileSync('./libs/.firebase-custom.conf.jst');
-    }
-
     // TODO: Grab bucket information from server eventually, for now just use the site name
-    var templated = _.template(confFile, { secretKey: secretkey, siteName: sitename, firebase: firebase });
+    var templated = _.template(confFile, { secretKey: secretkey, siteName: sitename });
 
     fs.writeFileSync('./.firebase.conf', templated);
 

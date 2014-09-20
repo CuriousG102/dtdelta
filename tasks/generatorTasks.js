@@ -1,5 +1,5 @@
 
-var curVersion = 'v43';
+var curVersion = 'v37';
 
 var request = require('request');
 
@@ -122,9 +122,8 @@ module.exports = function(grunt) {
     var sitename = grunt.option('sitename');
     var secretkey = grunt.option('secretkey');
     var copyCms = grunt.option('copycms');
-    var firebase = grunt.option('firebase');
 
-    generator.init(sitename, secretkey, copyCms, firebase, done);
+    generator.init(sitename, secretkey, copyCms, done);
   });
 
   // Check if initialized properly before running all these tasks
@@ -136,5 +135,3 @@ module.exports = function(grunt) {
   });
 
 };
-
-module.exports.version = curVersion;
