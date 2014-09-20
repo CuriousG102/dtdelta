@@ -16,28 +16,19 @@
 
 {% block content %}
 
-	{% set slideshow = get('homepageslideshow') %}
-	{% for article in getItems(slideshow.articles) %}
-        <ul>
-            <li>{{ article.name }}</li>
-            <li>{{ article.teaser }}</li>
-                       	 	<!-- Got ride of xThumb. We currently DO NOT have a solution for how staff members
-                       	 		 will upload a thumbnail for their article. Making them photoshop it every time seems too clunky,
-                       	 		 but autogenerating a thumbnail would also be a bad idea, because we would be unlikely to get a good
-                       	 		 thumbnail. The best solution I can think of is to make a part of the article CMS page let them select
-                       	 		 a thumbnail from the image they upload, but I'm not sure how to do that or if it's even possible.
-                       	 	-->
-            <li>{{ article.main_image }}</li>
-                        	<!-- <li class="xsources_mp4"></li>  -->
-                        	<!-- <li class="xsources_webm">static/homepage_slideshow/videos/big_buck_bunny_trailer.webm</li> -->
-        </ul>
-	{% endfor %}
-	
     <!-- slideshow -->
     <div class="vp2_html5_rightSidePlaylistBorder">
         <div class="vp2_html5_rightSidePlaylist">       
             <video id="vp2_html5_rightSidePlaylist_GI" width="840" height="473" preload="auto">  
                 <div class="xplaylist">
+                    {% for article in cms.homepageslideshow.articles %}
+                        <ul>
+                            <li class="xtitle">{{article.name}}</li>
+                            <li class="xdesc">{{article.teaser}}</li>
+                            <li class="xpreview">{% for relation in article.main_image %}{{ relation.image|imageSize(1024)  }}{% endfor %}</li>
+                        </ul>
+                    {% endfor %}
+
                 	<!-- Test stuff no longer needed. TO-DO: Remove entirely	
                     <ul>
                         <li class="xtitle">Lorem Ipsum Dolor</li>
