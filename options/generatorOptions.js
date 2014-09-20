@@ -2,10 +2,6 @@ var fs = require('fs');
 var url = require('url');
 var header = require('connect-header');
 
-var unescapeSite = function(site) {
-  return site.replace(/,1/g, '.');
-}
-
 module.exports = function(grunt) {
 
   var conf = {};
@@ -54,11 +50,11 @@ module.exports = function(grunt) {
         proxies: [
             {
                 context: '/webhook-uploads',
-                host:  conf.custom ? unescapeSite(conf.siteName) : (conf.siteName + '.webhook.org'),
+                host:  conf.siteName + '.webhook.org',
                 port: 80,
                 changeOrigin: true,
                 headers: {
-                  host: conf.custom ? unescapeSite(conf.siteName) : (conf.siteName + '.webhook.org')
+                  host: conf.siteName + '.webhook.org'
                 }
             }
         ]

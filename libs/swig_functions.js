@@ -32,15 +32,7 @@ module.exports.swigFunctions = function(swig) {
    * @returns {String}   Url for the object passed in
    */
   var url = function(object) {
-    if(typeof object === 'string') {
-      object = { slug: object, name: object };
-    }
-
-    if(object.slug) {
-      return '/' + object.slug + '/';
-    }
-
-    var slug = object.name ? slugger(object.name).toLowerCase() : "";
+    var slug = object.slug ? object.slug : (object.name ? slugger(object.name).toLowerCase() : null);
     var prefix = object._type ? object._type : '';
 
     var url = '';
@@ -87,14 +79,7 @@ module.exports.swigFunctions = function(swig) {
 
     for(var key in self.typeInfo) {
       if(returnOneOffs || !self.typeInfo[key].oneOff) {
-
-        var slug = key;
-
-        if(self.typeInfo[key] && self.typeInfo[key].customUrls && self.typeInfo[key].customUrls.listUrl) {
-          slug = self.typeInfo[key].customUrls.listUrl;
-        }
-
-        types.push({ slug: slug, name: self.typeInfo[key].name });
+        types.push({ slug: key, name: self.typeInfo[key].name });
       }
     }
 
@@ -107,7 +92,7 @@ module.exports.swigFunctions = function(swig) {
    * @param    {String} (OPTIONAL) If the first parameter was the type, this must be the ID of the item
    * @returns  {Object} The published item specified by the type/id or relation string passed in
    */
-  var getItem = function(type, key, ignorePub) {
+  var getItem = function(type, key) {
     if(!type) {
       return {};
     }
@@ -139,7 +124,7 @@ module.exports.swigFunctions = function(swig) {
       return {};
     }
 
-    if(!ignorePub && !self.typeInfo[type].oneOff) {
+    if(!self.typeInfo[type].oneOff) {
       if(!item.publish_date) {
         return {};
       }
@@ -152,20 +137,7 @@ module.exports.swigFunctions = function(swig) {
       }
     }
 
-    var relationshipFields = [];
-
-    if(self.typeInfo[type] && self.typeInfo[type].controls) {
-      self.typeInfo[type].controls.forEach(function(control) {
-        if(control.controlType === "relation") {
-          relationshipFields.push({ name: control.name, isSingle: control.meta.isSingle });
-        }
-      });
-    }
-
-    item = adjustRelationshipFields(relationshipFields, item);
-
     item._type = type;
-
     return item;
   };
 
@@ -179,7 +151,6 @@ module.exports.swigFunctions = function(swig) {
       return [];
     }
     var items = [];
-
     arr.forEach(function(itm) {
       var obj = getItem(itm);
       if(!_.isEmpty(obj)) {
@@ -188,66 +159,6 @@ module.exports.swigFunctions = function(swig) {
     });
 
     return items;
-  }
-
-  var generatedSlugs = {};
-  var generateSlug = function(value) {
-    if(!generatedSlugs[value._type]) {
-      generatedSlugs[value._type] = {};
-    }
-
-    if(value.slug) {
-      generatedSlugs[value._type][value.slug] = true;
-      return value.slug;
-    }
-
-    var tmpSlug = slugger(value.name).toLowerCase();
-
-    var no = 2;
-    while(generatedSlugs[value._type][tmpSlug]) {
-      tmpSlug = slugger(value.name).toLowerCase() + '_' + no;
-      no++;
-    }
-
-    generatedSlugs[value._type][tmpSlug] = true;
-
-    return tmpSlug;
-  }
-
-
-  var adjustRelationshipFields = function(fields, object) {
-    fields.forEach(function(field) {
-      var desc = Object.getOwnPropertyDescriptor(object, field.name);
-      if(desc && desc.get) { // Don't double dip
-        return;
-      }
-
-      var val = object[field.name];
-
-      if(field.isSingle) {
-        Object.defineProperty(object, field.name, {
-          enumerable: true,
-          configurable: true,
-          get: function() {
-            if(!val) return val;
-
-            return getItem(val);
-          }
-        });
-      } else {
-        Object.defineProperty(object, field.name, {
-          enumerable: true,
-          configurable: true,
-          get: function() {
-            if(!val) return val;
-
-            return getItems(val);
-          }
-        });
-      }
-    });
-
-    return object;
   }
 
   /**
@@ -264,62 +175,21 @@ module.exports.swigFunctions = function(swig) {
       return self.cachedData[names.join(',')];
     }
 
-    generatedSlugs = {};
+    // TODO, SLUG NAME THE SAME WAS CMS DOES
+
     var data = [];
     names.forEach(function(name) {
       var tempData = self.data[name] || {};
 
-      var relationshipFields = [];
-
-      if(self.typeInfo[name] && self.typeInfo[name].controls) {
-        self.typeInfo[name].controls.forEach(function(control) {
-          if(control.controlType === "relation") {
-            relationshipFields.push({ name: control.name, isSingle: control.meta.isSingle });
-          }
-        });
-      }
-
       if(self.typeInfo[name] && self.typeInfo[name].oneOff) {
-        tempData = adjustRelationshipFields(relationshipFields, tempData);
         data = tempData;
         return;
       }
 
       tempData = _.omit(tempData, function(value, key) { return key.indexOf('_') === 0; });
 
-      var no = 1;
       // convert it into an array
-      tempData = _.map(tempData, function(value, key) { 
-        var tmpSlug = "";
-
-        value._id = key; 
-        value._type = name; 
-
-        if(value.name)  {
-          if(!value.slug) {
-            var tmpSlug = generateSlug(value);
-            var prefix = '';
-
-            if(self.typeInfo[name] && self.typeInfo[name].customUrls && self.typeInfo[name].customUrls.listUrl) {
-              prefix = self.typeInfo[name].customUrls.listUrl + '/';
-            } else {
-              prefix = name + '/';
-            }
-
-            if(self.typeInfo[name] && self.typeInfo[name].customUrls && self.typeInfo[name].customUrls.individualUrl) {
-              prefix += utils.parseCustomUrl(self.typeInfo[name].customUrls.individualUrl, value) + '/';
-            }
-
-            prefix += tmpSlug;
-
-            value.slug = prefix;
-          }
-        }
-
-        value = adjustRelationshipFields(relationshipFields, value);
-
-        return value;
-      });
+      tempData = _.map(tempData, function(value, key) { value._id = key; value._type = name; if(value.name) value.slug = slugger(value.name).toLowerCase(); return value });
       tempData = _.filter(tempData, function(item) { 
         if(!item.publish_date) {
           return false;
@@ -400,84 +270,6 @@ module.exports.swigFunctions = function(swig) {
     return array[index];
   };
 
-  var sortItems = function(input, property, reverse) {
-
-    if(_.size(input) === 0) {
-      return input;
-    }
-
-    var first = input[0];
-    var sortProperty = '_sort_' + property;
-
-    if(first[sortProperty]) {
-      property = sortProperty;
-    }
-
-    if(reverse) {
-      return _.sortBy(input, property).reverse();
-    }
-    
-    return _.sortBy(input, property)
-  };
-
-  var nextItem = function(item, sort_name, reverse_sort) {
-    var type = item._type;
-    var items = getCombined(type);
-
-    if(sort_name) {
-      items = sortItems(items, sort_name, reverse_sort);
-    }
-
-    var nextItem = null;
-    var previousItem = null;
-
-    items.some(function(itm) {
-      if(previousItem && previousItem._id == item._id) {
-        nextItem = itm;
-        return true;
-      }
-
-      previousItem = itm;
-    });
-
-    return nextItem;
-  };
-
-  var prevItem = function(item, sort_name, reverse_sort) {
-    var type = item._type;
-    var items = getCombined(type);
-
-    if(sort_name) {
-      items = sortItems(items, sort_name, reverse_sort);
-    }
-
-    var returnItem = null;
-    var previousItem = null;
-
-    items.some(function(itm) {
-      if(itm._id == item._id) {
-        returnItem = previousItem;
-        return true;
-      }
-
-      previousItem = itm;
-    });
-
-    return returnItem;
-  };
-
-  var merge = function() {
-    var arrs = [].slice.call(arguments, 0);
-
-    var newArr = [];
-
-    arrs.forEach(function(arr) {
-      newArr = newArr.concat(arr);
-    })
-
-    return newArr;
-  }
-
   // FUNCTIONS USED FOR PAGINATION HELPING, IGNORE FOR MOST CASES
   this.shouldPaginate = function() {
     return self.curPage <= self.maxPage;
@@ -503,17 +295,10 @@ module.exports.swigFunctions = function(swig) {
   };
 
   this.getFunctions = function() {
-    var functions = {
+    return {
       get: getCombined,
-      getItem: function(holder) {
-        return holder;
-      },
-      _realGetItem: function(type, key, ignorePub) {
-        return getItem(type, key, ignorePub);
-      },
-      getItems: function(holder) {
-        return holder;
-      },
+      getItem: getItem,
+      getItems: getItems,
       getTypes: getTypes,
       paginate: paginate,
       getCurPage: getCurPage,
@@ -523,38 +308,8 @@ module.exports.swigFunctions = function(swig) {
       getCurrentUrl: getCurrentUrl,
       getSetting: getSetting,
       random: randomElement,
-      cmsVersion: 'v2',
-      merge: merge,
-      nextItem: nextItem,
-      prevItem: prevItem
+      cmsVersion: 'v2'
     };
-
-    var types = [];
-    for(var type in self.typeInfo) {
-      types.push(type);
-    }
-
-    var cms = {};
-
-    types.forEach(function(type) {
-
-      Object.defineProperty(cms, type, {
-        get: function() { return getCombined(type); },
-        enumerable: true,
-        configurable: true
-      })
-
-    });
-
-    functions['cms'] = cms;
-
-    Object.defineProperty(functions, 'cms_types', {
-      get: function() { return getTypes() },
-      enumerable: true,
-      configurable: true
-    })
-
-    return functions;
   };
 
 

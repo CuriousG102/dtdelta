@@ -21,15 +21,6 @@
         <div class="vp2_html5_rightSidePlaylist">       
             <video id="vp2_html5_rightSidePlaylist_GI" width="840" height="473" preload="auto">  
                 <div class="xplaylist">
-                    {% for article in cms.homepageslideshow.articles %}
-                        <ul>
-                            <li class="xtitle">{{article.name}}</li>
-                            <li class="xdesc">{{article.teaser}}</li>
-                            <li class="xpreview">{% for relation in article.main_image %}{{ relation.image|imageSize(1024)  }}{% endfor %}</li>
-                        </ul>
-                    {% endfor %}
-
-                	<!-- Test stuff no longer needed. TO-DO: Remove entirely	
                     <ul>
                         <li class="xtitle">Lorem Ipsum Dolor</li>
                         <li class="xdesc">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque hendrerit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam a sem tortor, eu gravida massa. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent feugiat tellus sit amet nisl varius quis blandit mi pretium. Cras non neque diam. Vestibulum elit nunc, tristique quis vulputate eu, lobortis eu neque. Donec mollis consequat arcu.</li>
@@ -64,8 +55,7 @@
                         <li class="xpreview">videos/previews/prev_b2.jpg</li>
                         <li class="xsources_mp4">videos/sintel_trailer.mp4</li>
                         <li class="xsources_webm">videos/sintel_trailer.webm</li>
-                    </ul>    
-                    --> 
+                    </ul>     
                 </div>       
             </video>
         </div>                  
@@ -85,8 +75,8 @@
 
             <!-- NEWS headlines -->
             <div id="slider_news">
-                <a href="#" class="control_next_news"></a>
-                <a href="#" class="control_prev_news"></a>
+                <a href="#" class="control_next_news">></a>
+                <a href="#" class="control_prev_news"><</a>
                 <ul>
                     <li>SLIDE 1</li>
                     <li style="background: #aaa;">SLIDE 2</li>
@@ -97,8 +87,8 @@
 
             <!-- SPORTS headlines -->
             <div id="slider_sports">
-                <a href="#" class="control_next_sports"></a>
-                <a href="#" class="control_prev_sports"></a>
+                <a href="#" class="control_next_sports">></a>
+                <a href="#" class="control_prev_sports"><</a>
                 <ul>
                     <li>SLIDE 1</li>
                     <li style="background: #aaa;">SLIDE 2</li>
@@ -109,8 +99,8 @@
     
             <!-- LIFE AND ARTS headlines -->
             <div id="slider_las">
-                <a href="#" class="control_next_las"></a>
-                <a href="#" class="control_prev_las"></a>
+                <a href="#" class="control_next_las">></a>
+                <a href="#" class="control_prev_las"><</a>
                 <ul>
                     <li>SLIDE 1</li>
                     <li style="background: #aaa;">SLIDE 2</li>
