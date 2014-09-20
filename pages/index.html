@@ -16,11 +16,29 @@
 
 {% block content %}
 
+	{% set slideshow = get('homepageslideshow') %}
+	{% for article in getItems(slideshow.articles) %}
+        <ul>
+            <li>{{ article.name }}</li>
+            <li>{{ article.teaser }}</li>
+                       	 	<!-- Got ride of xThumb. We currently DO NOT have a solution for how staff members
+                       	 		 will upload a thumbnail for their article. Making them photoshop it every time seems too clunky,
+                       	 		 but autogenerating a thumbnail would also be a bad idea, because we would be unlikely to get a good
+                       	 		 thumbnail. The best solution I can think of is to make a part of the article CMS page let them select
+                       	 		 a thumbnail from the image they upload, but I'm not sure how to do that or if it's even possible.
+                       	 	-->
+            <li>{{ article.main_image }}</li>
+                        	<!-- <li class="xsources_mp4"></li>  -->
+                        	<!-- <li class="xsources_webm">static/homepage_slideshow/videos/big_buck_bunny_trailer.webm</li> -->
+        </ul>
+	{% endfor %}
+	
     <!-- slideshow -->
     <div class="vp2_html5_rightSidePlaylistBorder">
         <div class="vp2_html5_rightSidePlaylist">       
             <video id="vp2_html5_rightSidePlaylist_GI" width="840" height="473" preload="auto">  
                 <div class="xplaylist">
+                	<!-- Test stuff no longer needed. TO-DO: Remove entirely	
                     <ul>
                         <li class="xtitle">Lorem Ipsum Dolor</li>
                         <li class="xdesc">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque hendrerit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam a sem tortor, eu gravida massa. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent feugiat tellus sit amet nisl varius quis blandit mi pretium. Cras non neque diam. Vestibulum elit nunc, tristique quis vulputate eu, lobortis eu neque. Donec mollis consequat arcu.</li>
@@ -55,7 +73,8 @@
                         <li class="xpreview">videos/previews/prev_b2.jpg</li>
                         <li class="xsources_mp4">videos/sintel_trailer.mp4</li>
                         <li class="xsources_webm">videos/sintel_trailer.webm</li>
-                    </ul>     
+                    </ul>    
+                    --> 
                 </div>       
             </video>
         </div>                  
