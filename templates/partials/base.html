@@ -64,6 +64,22 @@
     <div id='cssmenu'>
     <ul>
        <li class='active' style="width:0; padding:0; margin:-2px;"></li>
+       {% set departments = cms.department|sort('order') %}
+
+       {% for department in departments %}
+            <li class='has-sub'><a href="{{ url(department) }}"><span>{{ department.name }}</span></a>
+                <ul>
+                    {% set sections = cms.section|sort('order') %}
+                    {% for section in sections %}
+                        {% if section.relationship == department %}
+                            <li><a href="{{url(section)}}"><span>{{ section.name }}</span></a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </li>
+       {% endfor %}
+
+       <!-- Example: How to construct a Department link
        <li class='has-sub'><a href='#'><span>News</span></a>
           <ul>
              <li><a href='#'><span>Student Government</span></a></li>
@@ -82,39 +98,12 @@
              <li class='last'><a href='#'><span>Firing Lines</span></a></li>
           </ul>
        </li>
-       <li class='has-sub'><a href='#'><span>Sports</span></a>
-          <ul>
-             <li><a href='#'><span>Double Coverage</span></a></li>
-             <li><a href='#'><span>Football</span></a></li>
-             <li><a href='#'><span>Volleyball</span></a></li>
-             <li><a href='#'><span>Men's Basketball</span></a></li>
-             <li><a href='#'><span>Women's Basketball</span></a></li>
-             <li><a href='#'><span>Baseball</span></a></li>
-             <li><a href='#'><span>Softball</span></a></li>
-             <li><a href='#'><span>Other UT Sports</span></a></li>
-             <li class='last'><a href='#'><span>The Pros</span></a></li>
-          </ul>
-       </li>
-       <li class='has-sub'><a href='#'><span>Life and Arts</span></a>
-          <ul>
-             <li><a href='#'><span>Books</span></a></li>
-             <li><a href='#'><span>Fashion</span></a></li>
-             <li><a href='#'><span>Features</span></a></li>
-             <li><a href='#'><span>Food</span></a></li>
-             <li><a href='#'><span>Games & Tech</span></a></li>
-             <li><a href='#'><span>Movies & TV</span></a></li>
-             <li><a href='#'><span>Music</span></a></li>
-             <li><a href='#'><span>SXSW</span></a></li>
-             <li><a href='#'><span>Theater & Art</span></a></li>
-             <li><a href='#'><span>ACL Festival</span></a></li>
-             <li class='last'><a href='#'><span>X Games</span></a></li>
-          </ul>
-       </li>
+       -->
        <li class='has-sub'><a href='#'><span>Multimedia</span></a>
           <ul>
              <li><a href='#'><span>Slideshows</span></a></li>
              <li><a href='#'><span>Comics</span></a></li>
-             <li class='last'><a href='#'><span>Podcasts</span></a></li>
+             <li><a href='#'><span>Podcasts</span></a></li>
           </ul>
        </li>
        <li class='last'><a href='#'><span>Comics</span></a></li>
